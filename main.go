@@ -50,7 +50,7 @@ func main() {
 			rq := &corev1.ResourceQuota{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "default-quota",
-					Namespace: ns.Namespace,
+					Namespace: ns.Name,
 				},
 				Spec: corev1.ResourceQuotaSpec{
 					Hard: corev1.ResourceList{
