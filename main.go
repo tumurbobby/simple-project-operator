@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"path/filepath"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -44,7 +45,9 @@ func main() {
 	for event := range watcher.ResultChan() {
 
 		ns := event.Object.(*corev1.Namespace)
-
+		if !strings.HasPrefix(ns.Name, "bobby-") {
+			continue
+		}
 		// fmt.Println(event.Type, ns.Name)
 		if event.Type == watch.Added {
 			rq := &corev1.ResourceQuota{
