@@ -24,18 +24,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	// Get all namespaces
-	namespaces, err := clientset.CoreV1().Namespaces().List(context.Background(), metav1.ListOptions{})
+	ns := &corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "bobby-demo",
+		},
+	}
+	_, err = clientset.CoreV1().
+		Namespaces().
+		Create(
+			context.Background(),
+			ns,
+			metav1.CreateOptions{},
+		)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Namespaces:")
-
-	for _, ns := range namespaces.Items {
-		fmt.Println("-", ns.Name)
-	}
-
-	_ = corev1.Namespace{}
+	fmt.Println("Namespace created!")
 }
