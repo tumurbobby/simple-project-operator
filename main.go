@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"k8s.io/client-go/kubernetes"
@@ -24,21 +25,34 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	ns := &corev1.Namespace{
+	// ns := &corev1.Namespace{
+	// 	ObjectMeta: metav1.ObjectMeta{
+	// 		Name: "bobby-demo",
+	// 	},
+	// }
+	rq := &corev1.ResourceQuota{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "bobby-demo",
+			Name:      "default-quota",
+			Namespace: "bobby-demo",
+		},
+		Spec: corev1.ResourceQuotaSpec{
+			Hard: corev1.ResourceList{
+				corev1.ResourcePods:   resource.MustParse("2"),
+				corev1.ResourceCPU:    resource.MustParse("500m"),
+				corev1.ResourceMemory: resource.MustParse("500Mi"),
+			},
 		},
 	}
 	_, err = clientset.CoreV1().
-		Namespaces().
+		ResourceQuotas(rq.Namespace).
 		Create(
 			context.Background(),
-			ns,
+			rq,
 			metav1.CreateOptions{},
 		)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Namespace created!")
+	fmt.Println("Resource Quota created!")
 }
