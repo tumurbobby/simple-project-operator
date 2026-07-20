@@ -15,13 +15,11 @@ import (
 )
 
 func main() {
-	// Load sa
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err)
 	}
 
-	// Create Kubernetes client
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err)
