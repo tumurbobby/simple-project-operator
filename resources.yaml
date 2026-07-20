@@ -1,4 +1,15 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: namespace-controller
+  name: namespace-controller
+spec:
+  finalizers:
+  - kubernetes
+
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: namespace-controller-sa
@@ -26,8 +37,28 @@ subjects:
 - kind: ServiceAccount
   name: namespace-controller-sa
   namespace: namespace-controller
-  apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
   name: namespace-controller-role
   apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: namespace-controller
+  namespace: namespace-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: namespace-controller
+  template:
+    metadata:
+      labels:
+        app: namespace-controller
+    spec:
+      serviceAccountName: namespace-controller-sa
+      containers:
+      - name: namespace-controller
+        image: quay.io/bobby-tumur/public:latest
